@@ -1,13 +1,14 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import PropTypes from "prop-types";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
-import "./ContactForm.scss";
-import * as contactsActions from "../../redux/contacts/contacts-actions";
+import './ContactForm.scss';
+import { addContact } from '../../redux/contacts/contacts-operations';
+import { getContacts } from '../../redux/contacts/contacts-selectors';
 
 const INITIAL_STATE = {
-  name: "",
-  number: "",
+  name: '',
+  number: '',
 };
 
 class ContactForm extends Component {
@@ -20,12 +21,12 @@ class ContactForm extends Component {
     this.setState({ [name]: value });
   };
 
-  handelSubmit = (e) => {
+  handelSubmit = e => {
     e.preventDefault();
 
     const { name, number } = this.state;
     const { contacts } = this.props;
-    const includesContact = contacts.find((contact) => contact.name === name);
+    const includesContact = contacts.find(contact => contact.name === name);
 
     if (!includesContact) {
       this.props.onSubmit(name, number);
@@ -88,18 +89,17 @@ ContactForm.propTypes = {
   contacts: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string.isRequired,
-      number: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-        .isRequired,
-    })
+      number: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    }),
   ).isRequired,
 };
 
-const mapStateToProps = (state) => ({
-  contacts: state.contacts.items,
+const mapStateToProps = state => ({
+  contacts: getContacts(state),
 });
 
-const mapDispatchToProps = (dispatch) => ({
-  onSubmit: (name, number) => dispatch(contactsActions.add(name, number)),
+const mapDispatchToProps = dispatch => ({
+  onSubmit: (name, number) => dispatch(addContact(name, number)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ContactForm);
